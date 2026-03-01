@@ -1,0 +1,9 @@
+{
+  "/api/test": {
+    "algorithm": "token_bucket",
+    "window": 60,
+    "limit": 100,
+    "degraded_mode": "fail_soft",
+    "base_cost": 1
+  }
+}
