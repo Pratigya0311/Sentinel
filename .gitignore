@@ -1,0 +1,125 @@
+# ========================
+# Node.js / Gateway
+# ========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.node_repl_history
+dist/
+build/
+
+# ========================
+# Python / ML Service
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+
+# ML model files (large binaries — store separately if needed)
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.model
+
+# ========================
+# React / Dashboard
+# ========================
+dashboard/node_modules/
+dashboard/dist/
+dashboard/build/
+dashboard/.vite/
+
+# ========================
+# Environment Variables
+# NEVER commit secrets
+# ========================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# ========================
+# Docker
+# ========================
+docker-compose.override.yml
+
+# ========================
+# Redis
+# ========================
+*.rdb
+*.aof
+redis-data/
+sentinel-data/
+
+# ========================
+# Logs
+# ========================
+logs/
+*.log
+pids/
+*.pid
+*.seed
+
+# ========================
+# OS Files
+# ========================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+
+# ========================
+# IDE / Editor
+# ========================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+
+# ========================
+# Test / Coverage
+# ========================
+coverage/
+.nyc_output/
+test-results/
+k6-results/
+load-test-output/
