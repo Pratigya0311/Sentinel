@@ -1,0 +1,44 @@
+[
+  {
+    "route": "/api/health",
+    "algorithm": "fixed-window",
+    "windowMs": 10000,
+    "capacity": 120,
+    "globalCapacity": 400,
+    "degradedMode": "FAIL_OPEN",
+    "fairness": true,
+    "abuseThreshold": 18
+  },
+  {
+    "route": "/api/user",
+    "algorithm": "token-bucket",
+    "windowMs": 10000,
+    "capacity": 140,
+    "globalCapacity": 360,
+    "refillRate": 18,
+    "degradedMode": "FAIL_SOFT",
+    "fairness": true,
+    "abuseThreshold": 15
+  },
+  {
+    "route": "/api/search",
+    "algorithm": "sliding-window",
+    "windowMs": 15000,
+    "capacity": 180,
+    "globalCapacity": 420,
+    "degradedMode": "FAIL_SOFT",
+    "fairness": true,
+    "abuseThreshold": 13
+  },
+  {
+    "route": "/api/export",
+    "algorithm": "token-bucket",
+    "windowMs": 30000,
+    "capacity": 100,
+    "globalCapacity": 220,
+    "refillRate": 4,
+    "degradedMode": "FAIL_CLOSED",
+    "fairness": true,
+    "abuseThreshold": 10
+  }
+]

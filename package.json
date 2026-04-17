@@ -1,0 +1,29 @@
+{
+  "name": "sentinel",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "workspaces": [
+    "backend",
+    "gateway",
+    "aggregator",
+    "dashboard"
+  ],
+  "scripts": {
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:gateway": "npm --workspace gateway run dev",
+    "dev:aggregator": "npm --workspace aggregator run dev",
+    "dev:dashboard": "npm --workspace dashboard run dev",
+    "build:dashboard": "npm --workspace dashboard run build",
+    "test": "node tests/run.js",
+    "test:e2e": "node tests/integration/e2e-stack.js",
+    "test:redis": "node tests/integration/redis-edgecases.js",
+    "demo:seed": "node tests/load/demo-seed.js",
+    "demo:seed:burst": "node tests/load/live-abuse-burst.js",
+    "demo:live": "node tests/load/live-normal.js",
+    "demo:failover": "node tests/fault-injection/redis-failover-demo.js",
+    "demo:scenario": "node tests/load/demo-seed.js --redis-blip",
+    "demo:abuse": "node tests/load/live-abuse-burst.js",
+    "lint:dashboard": "npm --workspace dashboard run lint"
+  }
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "tenantId": "tenant-free",
+    "apiKey": "sentinel-free-key",
+    "tier": "free",
+    "creditBudget": 120,
+    "burst": 20,
+    "maxShare": 0.25
+  },
+  {
+    "tenantId": "tenant-pro",
+    "apiKey": "sentinel-pro-key",
+    "tier": "pro",
+    "creditBudget": 320,
+    "burst": 50,
+    "maxShare": 0.45
+  },
+  {
+    "tenantId": "tenant-enterprise",
+    "apiKey": "sentinel-enterprise-key",
+    "tier": "enterprise",
+    "creditBudget": 720,
+    "burst": 80,
+    "maxShare": 0.7
+  }
+]
+

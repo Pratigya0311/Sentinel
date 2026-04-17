@@ -1,0 +1,7 @@
+{
+  "/api/health": { "baseCost": 1 },
+  "/api/user": { "baseCost": 5 },
+  "/api/search": { "baseCost": 10 },
+  "/api/export": { "baseCost": 25 }
+}
+

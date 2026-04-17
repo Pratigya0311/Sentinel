@@ -1,0 +1,206 @@
+services:
+  redis-primary:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--replica-announce-ip", "redis-primary"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-primary-data:/data
+    networks:
+      - sentinel-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis-replica-1:
+    image: redis:7-alpine
+    command: ["redis-server", "--replicaof", "redis-primary", "6379", "--appendonly", "yes", "--replica-announce-ip", "redis-replica-1"]
+    depends_on:
+      redis-primary:
+        condition: service_healthy
+    networks:
+      - sentinel-net
+
+  redis-replica-2:
+    image: redis:7-alpine
+    command: ["redis-server", "--replicaof", "redis-primary", "6379", "--appendonly", "yes", "--replica-announce-ip", "redis-replica-2"]
+    depends_on:
+      redis-primary:
+        condition: service_healthy
+    networks:
+      - sentinel-net
+
+  redis-sentinel-1:
+    image: redis:7-alpine
+    command:
+      [
+        "sh",
+        "-c",
+        "cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf && redis-server /tmp/sentinel.conf --sentinel"
+      ]
+    ports:
+      - "26379:26379"
+    depends_on:
+      redis-primary:
+        condition: service_healthy
+    volumes:
+      - ./redis/sentinel-1.conf:/etc/redis-base/sentinel.conf:ro
+    networks:
+      - sentinel-net
+
+  redis-sentinel-2:
+    image: redis:7-alpine
+    command:
+      [
+        "sh",
+        "-c",
+        "cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf && redis-server /tmp/sentinel.conf --sentinel"
+      ]
+    ports:
+      - "26380:26379"
+    depends_on:
+      redis-primary:
+        condition: service_healthy
+    volumes:
+      - ./redis/sentinel-2.conf:/etc/redis-base/sentinel.conf:ro
+    networks:
+      - sentinel-net
+
+  redis-sentinel-3:
+    image: redis:7-alpine
+    command:
+      [
+        "sh",
+        "-c",
+        "cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf && redis-server /tmp/sentinel.conf --sentinel"
+      ]
+    ports:
+      - "26381:26379"
+    depends_on:
+      redis-primary:
+        condition: service_healthy
+    volumes:
+      - ./redis/sentinel-3.conf:/etc/redis-base/sentinel.conf:ro
+    networks:
+      - sentinel-net
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    networks:
+      - sentinel-net
+
+  controller:
+    build:
+      context: ./controller
+    environment:
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    networks:
+      - sentinel-net
+
+  aggregator:
+    build:
+      context: ./aggregator
+    environment:
+      PORT: 4100
+    ports:
+      - "4100:4100"
+    networks:
+      - sentinel-net
+
+  gateway:
+    build:
+      context: ./gateway
+    environment:
+      PORT: 3000
+      GATEWAY_INSTANCE_ID: gateway-1
+      BACKEND_URL: http://backend:4000
+      AGGREGATOR_URL: http://aggregator:4100
+      CONTROLLER_URL: http://controller:5000
+      REDIS_MASTER_NAME: mymaster
+      REDIS_SENTINELS: redis-sentinel-1:26379,redis-sentinel-2:26379,redis-sentinel-3:26379
+      REDIS_CONNECT_TIMEOUT_MS: 1500
+      REDIS_MAX_RETRIES: 2
+      CONTROLLER_REFRESH_MS: 3000
+      FALLBACK_TOKENS_PER_SECOND: 20
+      FALLBACK_BURST: 40
+      AUDIT_LOG_STDOUT: "true"
+    depends_on:
+      - backend
+      - controller
+      - aggregator
+      - redis-sentinel-1
+      - redis-sentinel-2
+      - redis-sentinel-3
+    ports:
+      - "3000:3000"
+    networks:
+      - sentinel-net
+
+  gateway-2:
+    build:
+      context: ./gateway
+    environment:
+      PORT: 3000
+      GATEWAY_INSTANCE_ID: gateway-2
+      BACKEND_URL: http://backend:4000
+      AGGREGATOR_URL: http://aggregator:4100
+      CONTROLLER_URL: http://controller:5000
+      REDIS_MASTER_NAME: mymaster
+      REDIS_SENTINELS: redis-sentinel-1:26379,redis-sentinel-2:26379,redis-sentinel-3:26379
+      REDIS_CONNECT_TIMEOUT_MS: 1500
+      REDIS_MAX_RETRIES: 2
+      CONTROLLER_REFRESH_MS: 3000
+      FALLBACK_TOKENS_PER_SECOND: 20
+      FALLBACK_BURST: 40
+      AUDIT_LOG_STDOUT: "true"
+    depends_on:
+      - backend
+      - controller
+      - aggregator
+      - redis-sentinel-1
+      - redis-sentinel-2
+      - redis-sentinel-3
+    ports:
+      - "3001:3000"
+    networks:
+      - sentinel-net
+
+  dashboard:
+    build:
+      context: ./dashboard
+    depends_on:
+      - aggregator
+    ports:
+      - "8080:80"
+    networks:
+      - sentinel-net
+
+  demo-runner:
+    image: node:22-alpine
+    working_dir: /workspace
+    command: ["sh", "-c", "npm run demo:live"]
+    environment:
+      GATEWAYS: http://gateway:3000,http://gateway-2:3000
+    volumes:
+      - ./:/workspace
+    depends_on:
+      - gateway
+      - gateway-2
+    networks:
+      - sentinel-net
+
+volumes:
+  redis-primary-data:
+
+networks:
+  sentinel-net:
+    driver: bridge
